@@ -77,6 +77,9 @@ body {
 .donor-amounts { font-size: 0.85rem; color: var(--brown-medium); margin-top: 4px; }
 .donor-amounts span { color: var(--accent-warm); font-weight: bold; font-size: 0.95rem; }
 
+.loading { grid-column: 1 / -1; text-align: center; padding: 40px; font-size: 1.2rem; color: var(--brown-medium); }
+footer { text-align: center; padding: 40px 0 20px; color: var(--brown-medium); font-size: 0.95rem; }
+
 /* 🌟 Leaderboard (ตารางจัดอันดับ) */
 .leaderboard-section {
     margin: 40px 0;
@@ -147,7 +150,3 @@ body {
     font-size: 1.2rem;
     white-space: nowrap;
 }
-
-.loading { grid-column: 1 / -1; text-align: center; padding: 40px; font-size: 1.2rem; color: var(--brown-medium); }
-footer { text-align: center; padding: 40px 0 20px; color: var(--brown-medium); font-size: 0.95rem; }
-
