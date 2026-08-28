@@ -77,5 +77,77 @@ body {
 .donor-amounts { font-size: 0.85rem; color: var(--brown-medium); margin-top: 4px; }
 .donor-amounts span { color: var(--accent-warm); font-weight: bold; font-size: 0.95rem; }
 
+/* 🌟 Leaderboard (ตารางจัดอันดับ) */
+.leaderboard-section {
+    margin: 40px 0;
+    background-color: var(--card-bg);
+    border-radius: 18px;
+    border: 4px solid var(--brown-medium);
+    padding: 25px;
+    box-shadow: 0 10px 20px rgba(74, 53, 37, 0.1);
+}
+
+.leaderboard-container {
+    overflow-x: auto; /* เผื่อดูในมือถือแล้วตารางกว้างไป */
+}
+
+.leaderboard-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+    font-size: 1.05rem;
+}
+
+.leaderboard-table th {
+    background-color: var(--brown-soft);
+    color: var(--brown-dark);
+    padding: 12px 15px;
+    border-bottom: 3px solid var(--brown-medium);
+    font-size: 1.1rem;
+    white-space: nowrap;
+}
+
+.leaderboard-table td {
+    padding: 12px 15px;
+    border-bottom: 1px dashed var(--brown-soft);
+    vertical-align: middle;
+}
+
+.leaderboard-table tr:hover {
+    background-color: var(--bg-cream);
+}
+
+.rank-medal {
+    font-size: 1.5rem;
+    text-align: center;
+    font-weight: bold;
+    color: var(--brown-dark);
+}
+
+.leaderboard-donor {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    font-weight: bold;
+    color: var(--brown-dark);
+}
+
+.leaderboard-avatar {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    border: 2px solid var(--accent-yellow);
+    object-fit: cover;
+    background-color: #fff;
+}
+
+.leaderboard-amount {
+    color: var(--accent-warm);
+    font-weight: bold;
+    font-size: 1.2rem;
+    white-space: nowrap;
+}
+
 .loading { grid-column: 1 / -1; text-align: center; padding: 40px; font-size: 1.2rem; color: var(--brown-medium); }
 footer { text-align: center; padding: 40px 0 20px; color: var(--brown-medium); font-size: 0.95rem; }
+
