@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Jew School Donate - BNK48 GE 2026</title>
     <link rel="stylesheet" href="style.css">
-    <!-- Google Fonts: Mali (ฟอนต์น่ารัก สไตล์ลายมือ/โรงเรียน) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Mali:wght@400;600;700&display=swap" rel="stylesheet">
@@ -13,14 +12,14 @@
 <body>
 
     <div class="container">
-        <!-- Header / ป้ายชื่อโปรเจกต์ -->
+        <!-- Header -->
         <header class="school-header">
             <div class="badge">🏫 Jew School Donate</div>
             <h1>โปรเจกต์สนับสนุนน้องจิว</h1>
             <p>ร่วมระดมทุนส่งน้องจิวสู่ความฝันในงาน BNK48 General Election 2026 🤎</p>
         </header>
 
-        <!-- Summary Blackboard / กระดานดำสรุปยอดรวม -->
+        <!-- Summary Blackboard -->
         <section class="blackboard-summary">
             <div class="blackboard-inner">
                 <h2>✏️ ยอดโดเนทรวมทั้งหมด</h2>
@@ -40,7 +39,7 @@
             </div>
         </section>
 
-        <!-- Sub Projects Section / โปรเจกต์ย่อย -->
+        <!-- Sub Projects Section -->
         <main class="projects-section">
             <h2 class="section-title">🎒 โปรเจกต์ย่อยทั้งหมด</h2>
             <div id="projects-grid" class="projects-grid">
@@ -48,12 +47,23 @@
             </div>
         </main>
 
+        <!-- 🌟 เพิ่มส่วนนี้เข้ามา: หน้าต่าง Popup (Modal) สำหรับดูรายชื่อ -->
+        <div id="donor-modal" class="modal-overlay">
+            <div class="modal-content">
+                <button class="close-modal" onclick="closeModal()">✖</button>
+                <h3 id="modal-project-title">🎁 ผู้สนับสนุน</h3>
+                <div class="modal-donors-list" id="modal-donors-list">
+                    <!-- รายชื่อจะมาโผล่ตรงนี้ -->
+                </div>
+            </div>
+        </div>
+
         <footer>
             <p>🏫 ขอขอบคุณทุกๆ การสนับสนุนเพื่อน้องจิว BNK48 นะคะ/ครับ 🤎</p>
         </footer>
     </div>
 
-    <!-- PapaParse Library สำหรับอ่าน CSV จาก Google Sheets -->
+    <!-- PapaParse Library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
     <script src="script.js"></script>
 </body>
