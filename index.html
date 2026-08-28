@@ -7,53 +7,99 @@
   <style>
     body { font-family: sans-serif; max-width: 600px; margin: auto; padding: 20px; }
     .progress-bar { width: 100%; background-color: #e0e0e0; border-radius: 8px; overflow: hidden; margin-bottom: 20px; }
-    .progress-fill { height: 24px; background-color: #4caf50; width: 0%; text-align: center; color: white; transition: width 0.5s; }
+    .progress-fill { height: 24px; background-color: #4caf50; width: 0%; text-align: center; color: white; transition: width 0.5s; line-height: 24px; }
     table { width: 100%; border-collapse: collapse; margin-top: 10px; }
     th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
     th { background-color: #f2f2f2; }
+    .loading { text-align: center; font-style: italic; color: #888; }
   </style>
 </head>
 <body>
   <h1 style="text-align: center;">โปรเจกต์สนับสนุน จิว (Jew BNK48)</h1>
   
   <h3>ความคืบหน้าโปรเจกต์</h3>
-  <p>เป้าหมาย: 50,000 บาท | ยอดปัจจุบัน: <span id="current">0</span> บาท</p>
+  <p>เป้าหมาย: <span id="target-display">50,000</span> บาท | ยอดปัจจุบัน: <span id="current">กำลังโหลด...</span> บาท</p>
   <div class="progress-bar">
     <div class="progress-fill" id="progress-fill">0%</div>
   </div>
 
   <h3>รายนามผู้สนับสนุน</h3>
-  <table id="donor-table">
-    <tr>
-      <th>ผู้สนับสนุน</th>
-      <th>จำนวนเงิน (บาท)</th>
-    </tr>
-    <!-- ข้อมูลจาก JavaScript จะถูกแทรกตรงนี้ -->
+  <div id="loading-message" class="loading">กำลังดึงข้อมูลจาก Google Sheets...</div>
+  <table id="donor-table" style="display: none;">
+    <thead>
+      <tr>
+        <th>ผู้สนับสนุน</th>
+        <th>จำนวนเงิน (บาท)</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- ข้อมูลจาก Google Sheets จะถูกแทรกตรงนี้ -->
+    </tbody>
   </table>
 
   <script>
-    // ส่วนนี้คือจุดที่สามารถใช้ Fetch API ดึงข้อมูล CSV จาก Google Sheets มาแทนที่ Mock Data ได้
-    const mockData = [
-      { name: "ด้อมจิว", amount: 15000 },
-      { name: "ผู้สนับสนุนนิรนาม", amount: 10000 }
-    ];
+    // URL ที่เปลี่ยนให้ดึงข้อมูลเป็น CSV แล้ว
+    const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ3l9zibWhljiTfzhh6z4HIargq4OYEJFKZPdMYs6KGtZ6_p_-m6Ts_OJrBfGebHiS9sSDoC-r5mMTd/pub?gid=112485862&single=true&output=csv";
+    
+    // ตั้งเป้าหมายที่ต้องการ
+    const targetAmount = 50000;
+    
+    document.getElementById('target-display').innerText = targetAmount.toLocaleString();
 
-    let target = 50000;
-    let currentAmount = mockData.reduce((sum, donor) => sum + donor.amount, 0);
+    // ฟังก์ชันดึงและแปลงข้อมูล CSV
+    fetch(csvUrl)
+      .then(response => response.text())
+      .then(csvText => {
+        // แยกบรรทัด
+        const rows = csvText.split("\n");
+        const tableBody = document.getElementById('donor-table').getElementsByTagName('tbody')[0];
+        let totalDonation = 0;
 
-    // อัปเดตตัวเลขและหลอด Progress
-    document.getElementById('current').innerText = currentAmount.toLocaleString();
-    let percentage = Math.min((currentAmount / target) * 100, 100);
-    document.getElementById('progress-fill').style.width = percentage + '%';
-    document.getElementById('progress-fill').innerText = percentage.toFixed(1) + '%';
+        // สมมติว่าแถวแรก (Index 0) เป็น Header (ชื่อ, จำนวนเงิน)
+        // เราจะเริ่มอ่านข้อมูลตั้งแต่แถวที่ 2 (Index 1)
+        for (let i = 1; i < rows.length; i++) {
+          const row = rows[i].trim();
+          if (!row) continue; // ข้ามบรรทัดว่าง
 
-    // สร้างตาราง
-    const table = document.getElementById('donor-table');
-    mockData.forEach(donor => {
-      let row = table.insertRow();
-      row.insertCell(0).innerText = donor.name;
-      row.insertCell(1).innerText = donor.amount.toLocaleString();
-    });
+          // แยกคอลัมน์ด้วยเครื่องหมายจุลภาค
+          // กรณีที่มีชื่อที่มีลูกน้ำข้างใน (เช่น "A, B") จะต้องเขียนตัวแยกที่ซับซ้อนกว่านี้ 
+          // แต่เพื่อความง่าย เราจะใช้ split(',') ไปก่อน
+          const cols = row.split(',');
+          
+          if(cols.length >= 2) {
+             const name = cols[0];
+             // แปลงค่าเงินให้เป็นตัวเลข ลบเครื่องหมายอื่นๆ ออก
+             const amount = parseFloat(cols[1].replace(/[^0-9.-]+/g,""));
+             
+             if(!isNaN(amount)) {
+                totalDonation += amount;
+
+                // สร้างแถวในตาราง
+                let newRow = tableBody.insertRow();
+                newRow.insertCell(0).innerText = name;
+                newRow.insertCell(1).innerText = amount.toLocaleString();
+             }
+          }
+        }
+
+        // อัปเดตยอดรวมและ Progress Bar
+        document.getElementById('current').innerText = totalDonation.toLocaleString();
+        
+        let percentage = Math.min((totalDonation / targetAmount) * 100, 100);
+        const progressFill = document.getElementById('progress-fill');
+        progressFill.style.width = percentage + '%';
+        progressFill.innerText = percentage.toFixed(1) + '%';
+
+        // ซ่อนข้อความโหลด และโชว์ตาราง
+        document.getElementById('loading-message').style.display = 'none';
+        document.getElementById('donor-table').style.display = 'table';
+
+      })
+      .catch(error => {
+        console.error("เกิดข้อผิดพลาดในการดึงข้อมูล:", error);
+        document.getElementById('loading-message').innerText = "ไม่สามารถโหลดข้อมูลได้";
+        document.getElementById('loading-message').style.color = "red";
+      });
   </script>
 </body>
 </html>
