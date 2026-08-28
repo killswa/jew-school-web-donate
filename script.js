@@ -1,116 +1,87 @@
-// ⚠️ 1. เอา ID ดั้งเดิมจาก URL ด้านบน มาใส่ในเครื่องหมายคำพูดด้านล่างนี้เลยครับ
-const SHEET_ID = '1NbgQ_QtmMVC1d6JIZoWe2MV3_JHvakyHfJwvKuNVZ9w';
+// ⚠️ อย่าลืมใส่ Sheet ID ของคุณตรงนี้!
+const SHEET_ID = 'ใส่รหัสของคุณตรงนี้'; 
 
-// URL สำหรับดึงข้อมูลทั้ง 2 แท็บ (แท็บ Projects และ แท็บ Donations)
 const URL_PROJECTS = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=Projects`;
 const URL_DONATIONS = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=Donations`;
+
+// ตัวแปรส่วนกลางสำหรับเก็บข้อมูลไว้ใช้ตอนเปิด Popup
+let globalProjects = {};
+let globalProjectDonations = {};
+let globalDonorTotals = {};
 
 document.addEventListener('DOMContentLoaded', () => {
     fetchDashboardData();
 });
 
-// ฟังก์ชันสำหรับดึงข้อมูล CSV
 function fetchCSV(url) {
     return new Promise((resolve, reject) => {
         Papa.parse(url, {
-            download: true,
-            header: true,
+            download: true, header: true,
             complete: (results) => resolve(results.data),
             error: (err) => reject(err)
         });
     });
 }
 
-// ฟังก์ชันหลักสำหรับดึงข้อมูล 2 ชีตพร้อมกัน
 async function fetchDashboardData() {
     try {
         const [projectsData, donationsData] = await Promise.all([
             fetchCSV(URL_PROJECTS),
             fetchCSV(URL_DONATIONS)
         ]);
-
         processAndRender(projectsData, donationsData);
     } catch (error) {
         console.error('Error fetching data:', error);
         document.getElementById('projects-grid').innerHTML = 
-            '<div class="loading">❌ ไม่สามารถโหลดข้อมูลได้ กรุณาตรวจสอบว่าใส่ Sheet ID ถูกต้องและเปิดแชร์เป็น "ทุกคนที่มีลิงก์" แล้ว</div>';
+            '<div class="loading">❌ ไม่สามารถโหลดข้อมูลได้ กรุณาตรวจสอบ Sheet ID</div>';
     }
 }
 
-// ฟังก์ชันประมวลผลและวาดหน้าจอ
 function processAndRender(projects, donations) {
+    // ล้างข้อมูลเก่า
+    globalProjects = {};
+    globalProjectDonations = {};
+    globalDonorTotals = {};
+    
     let totalDonatedOverall = 0;
     let totalTargetOverall = 0;
     let validProjectsCount = 0;
 
-    // 1. คำนวณยอดบริจาครวมของ "ผู้บริจาคแต่ละคน" (Total per person)
-    const donorTotals = {};
+    // คำนวณยอดของแต่ละคน
     donations.forEach(d => {
         if (!d.donor_name || d.donor_name.trim() === '') return;
         const amount = parseFloat(d.amount) || 0;
-        donorTotals[d.donor_name] = (donorTotals[d.donor_name] || 0) + amount;
-        totalDonatedOverall += amount; // บวกเข้ายอดรวมของโปรเจกต์จิว
+        globalDonorTotals[d.donor_name] = (globalDonorTotals[d.donor_name] || 0) + amount;
+        totalDonatedOverall += amount; 
     });
 
-    // 2. จัดกลุ่มประวัติการบริจาคตาม "โปรเจกต์" (Project ID)
-    const projectDonations = {};
+    // จัดกลุ่มตามโปรเจกต์
     donations.forEach(d => {
         if (!d.project_id) return;
-        if (!projectDonations[d.project_id]) projectDonations[d.project_id] = [];
-        projectDonations[d.project_id].push(d);
+        if (!globalProjectDonations[d.project_id]) globalProjectDonations[d.project_id] = [];
+        globalProjectDonations[d.project_id].push(d);
     });
 
     const projectsGrid = document.getElementById('projects-grid');
     projectsGrid.innerHTML = '';
 
-    // 3. สร้างการ์ดโปรเจกต์
+    // สร้างการ์ดโปรเจกต์
     projects.forEach(project => {
         if (!project.id || !project.title) return;
+        
+        // เก็บข้อมูลโปรเจกต์ไว้ใช้ตอนกด Popup
+        globalProjects[project.id] = project; 
         
         validProjectsCount++;
         const target = parseFloat(project.target) || 0;
         totalTargetOverall += target;
 
-        // ดึงรายการคนโดเนทของโปรเจกต์นี้
-        const donorsInThisProject = projectDonations[project.id] || [];
-        
-        // คำนวณยอดปัจจุบันของโปรเจกต์นี้จากชีต Donations
+        const donorsInThisProject = globalProjectDonations[project.id] || [];
         const currentAmount = donorsInThisProject.reduce((sum, d) => sum + (parseFloat(d.amount) || 0), 0);
         const percent = target > 0 ? Math.min(Math.round((currentAmount / target) * 100), 100) : 0;
         const isCompleted = currentAmount >= target;
 
-        // 4. สร้าง HTML สำหรับรายการผู้บริจาคในโปรเจกต์นี้
-        let donorsHTML = '';
-        if (donorsInThisProject.length > 0) {
-            donorsHTML = `<div class="donors-section">
-                <div class="donors-title">🎁 ผู้สนับสนุนน้องจิว</div>
-                <div class="donor-list">`;
-            
-            donorsInThisProject.forEach(d => {
-                const donatedToThis = parseFloat(d.amount) || 0;
-                const totalByThisPerson = donorTotals[d.donor_name];
-                // ถ้ารูปไม่มี ให้ใช้รูปตัวแทนที่สร้างจากชื่อ
-                const avatar = d.donor_image || `https://ui-avatars.com/api/?name=${d.donor_name}&background=random`;
-
-                donorsHTML += `
-                    <div class="donor-item">
-                        <img src="${avatar}" alt="${d.donor_name}" class="donor-avatar">
-                        <div class="donor-info">
-                            <div class="donor-name">${d.donor_name}</div>
-                            <div class="donor-amounts">
-                                โดเนทโปรเจกต์นี้: <span>${donatedToThis.toLocaleString()} ฿</span><br>
-                                (โดเนทรวมทั้งหมด: ${totalByThisPerson.toLocaleString()} ฿)
-                            </div>
-                        </div>
-                    </div>
-                `;
-            });
-            donorsHTML += `</div></div>`;
-        } else {
-            donorsHTML = `<div class="donors-section"><div class="donors-title" style="color:#aaa;">ยังไม่มีผู้สนับสนุน ร่วมเป็นคนแรกสิ! 😊</div></div>`;
-        }
-
-        // 5. ประกอบการ์ด
+        // ประกอบ HTML การ์ด (เปลี่ยนจากลิสต์รายชื่อ เป็นปุ่มกด)
         const cardHTML = `
             <div class="project-card">
                 <span class="status-badge ${isCompleted ? 'completed' : ''}">
@@ -127,16 +98,69 @@ function processAndRender(projects, donations) {
                         <span class="finance-current">ได้: ${currentAmount.toLocaleString()} ฿ (${percent}%)</span>
                         <span class="finance-target">เป้า: ${target.toLocaleString()} ฿</span>
                     </div>
-                    ${donorsHTML}
+                    <button class="btn-view-donors" onclick="openModal('${project.id}')">🎁 ดูรายชื่อผู้สนับสนุน</button>
                 </div>
             </div>
         `;
-
         projectsGrid.innerHTML += cardHTML;
     });
 
-    // 6. อัปเดตยอดรวมด้านบนสุด
+    // อัปเดตกระดานดำด้านบน
     document.getElementById('total-donated').innerText = totalDonatedOverall.toLocaleString();
     document.getElementById('total-target').innerText = totalTargetOverall.toLocaleString();
     document.getElementById('project-count').innerText = validProjectsCount;
+}
+
+// 🌟 ระบบ Popup (Modal)
+function openModal(projectId) {
+    const project = globalProjects[projectId];
+    const donors = globalProjectDonations[projectId] || [];
+    
+    // อัปเดตชื่อโปรเจกต์บนหัว Popup
+    document.getElementById('modal-project-title').innerText = `🎁 โปรเจกต์: ${project.title}`;
+    
+    const listContainer = document.getElementById('modal-donors-list');
+    
+    if (donors.length > 0) {
+        // เรียงลำดับคนที่โดเนทเยอะสุดขึ้นก่อน
+        donors.sort((a, b) => (parseFloat(b.amount) || 0) - (parseFloat(a.amount) || 0));
+        
+        let html = '';
+        donors.forEach(d => {
+            const amount = parseFloat(d.amount) || 0;
+            const totalAmount = globalDonorTotals[d.donor_name] || 0;
+            const avatar = d.donor_image || `https://ui-avatars.com/api/?name=${d.donor_name}&background=random`;
+            
+            html += `
+                <div class="donor-item">
+                    <img src="${avatar}" alt="${d.donor_name}" class="donor-avatar">
+                    <div class="donor-info">
+                        <div class="donor-name">${d.donor_name}</div>
+                        <div class="donor-amounts">
+                            โดเนทโปรเจกต์นี้: <span>${amount.toLocaleString()} ฿</span><br>
+                            (โดเนททุกโปรเจกต์รวมกัน: ${totalAmount.toLocaleString()} ฿)
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+        listContainer.innerHTML = html;
+    } else {
+        listContainer.innerHTML = `<div style="text-align:center; padding: 40px 20px; color:#8D6E63;">ยังไม่มีผู้สนับสนุน<br>มาร่วมระดมทุนให้น้องจิวกันเถอะ! 😊</div>`;
+    }
+    
+    // โชว์ Popup
+    document.getElementById('donor-modal').style.display = 'flex';
+}
+
+function closeModal() {
+    document.getElementById('donor-modal').style.display = 'none';
+}
+
+// ถ้าคลิกพื้นที่ว่างๆ นอกกล่อง Popup ให้ปิด Popup
+window.onclick = function(event) {
+    const modal = document.getElementById('donor-modal');
+    if (event.target == modal) {
+        closeModal();
+    }
 }
