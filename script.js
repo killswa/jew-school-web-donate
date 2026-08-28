@@ -1,5 +1,5 @@
-// ⚠️ อย่าลืมเปลี่ยน SHEET_ID ตรงนี้ด้วย Sheet ID ของคุณ
-const SHEET_ID = 'YOUR_GOOGLE_SHEET_ID_HERE';
+// ⚠️ 1. เอา ID ดั้งเดิมจาก URL ด้านบน มาใส่ในเครื่องหมายคำพูดด้านล่างนี้เลยครับ
+const SHEET_ID = 'ใส่รหัสของคุณตรงนี้';
 
 // URL สำหรับดึงข้อมูลทั้ง 2 แท็บ (แท็บ Projects และ แท็บ Donations)
 const URL_PROJECTS = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=Projects`;
@@ -33,7 +33,7 @@ async function fetchDashboardData() {
     } catch (error) {
         console.error('Error fetching data:', error);
         document.getElementById('projects-grid').innerHTML = 
-            '<div class="loading">❌ ไม่สามารถโหลดข้อมูลได้ กรุณาตรวจสอบการตั้งค่าแชร์ Google Sheets หรือชื่อแท็บ</div>';
+            '<div class="loading">❌ ไม่สามารถโหลดข้อมูลได้ กรุณาตรวจสอบว่าใส่ Sheet ID ถูกต้องและเปิดแชร์เป็น "ทุกคนที่มีลิงก์" แล้ว</div>';
     }
 }
 
@@ -49,7 +49,7 @@ function processAndRender(projects, donations) {
         if (!d.donor_name || d.donor_name.trim() === '') return;
         const amount = parseFloat(d.amount) || 0;
         donorTotals[d.donor_name] = (donorTotals[d.donor_name] || 0) + amount;
-        totalDonatedOverall += amount; // บวกเข้ายอดรวมของโรงเรียน
+        totalDonatedOverall += amount; // บวกเข้ายอดรวมของโปรเจกต์จิว
     });
 
     // 2. จัดกลุ่มประวัติการบริจาคตาม "โปรเจกต์" (Project ID)
@@ -83,7 +83,7 @@ function processAndRender(projects, donations) {
         let donorsHTML = '';
         if (donorsInThisProject.length > 0) {
             donorsHTML = `<div class="donors-section">
-                <div class="donors-title">🎁 ผู้สนับสนุนใจดี</div>
+                <div class="donors-title">🎁 ผู้สนับสนุนน้องจิว</div>
                 <div class="donor-list">`;
             
             donorsInThisProject.forEach(d => {
@@ -116,7 +116,7 @@ function processAndRender(projects, donations) {
                 <span class="status-badge ${isCompleted ? 'completed' : ''}">
                     ${isCompleted ? 'สำเร็จแล้ว 🎉' : 'กำลังระดมทุน ✏️'}
                 </span>
-                <img src="${project.image || 'https://placehold.co/400x250/8d6e63/fff?text=School'}" alt="${project.title}" class="card-img">
+                <img src="${project.image || 'https://placehold.co/400x250/8d6e63/fff?text=Jew+Project'}" alt="${project.title}" class="card-img">
                 <div class="card-body">
                     <h3 class="card-title">${project.title}</h3>
                     <p class="card-desc">${project.description || ''}</p>
@@ -135,7 +135,7 @@ function processAndRender(projects, donations) {
         projectsGrid.innerHTML += cardHTML;
     });
 
-    // 6. อัปเดตยอดรวมในกระดานดำด้านบนสุด
+    // 6. อัปเดตยอดรวมด้านบนสุด
     document.getElementById('total-donated').innerText = totalDonatedOverall.toLocaleString();
     document.getElementById('total-target').innerText = totalTargetOverall.toLocaleString();
     document.getElementById('project-count').innerText = validProjectsCount;
