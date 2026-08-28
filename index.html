@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>โปรเจกต์สนับสนุน จิว BNK48</title>
+  <style>
+    body { font-family: sans-serif; max-width: 600px; margin: auto; padding: 20px; }
+    .progress-bar { width: 100%; background-color: #e0e0e0; border-radius: 8px; overflow: hidden; margin-bottom: 20px; }
+    .progress-fill { height: 24px; background-color: #4caf50; width: 0%; text-align: center; color: white; transition: width 0.5s; }
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+    th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+    th { background-color: #f2f2f2; }
+  </style>
+</head>
+<body>
+  <h1 style="text-align: center;">โปรเจกต์สนับสนุน จิว (Jew BNK48)</h1>
+  
+  <h3>ความคืบหน้าโปรเจกต์</h3>
+  <p>เป้าหมาย: 50,000 บาท | ยอดปัจจุบัน: <span id="current">0</span> บาท</p>
+  <div class="progress-bar">
+    <div class="progress-fill" id="progress-fill">0%</div>
+  </div>
+
+  <h3>รายนามผู้สนับสนุน</h3>
+  <table id="donor-table">
+    <tr>
+      <th>ผู้สนับสนุน</th>
+      <th>จำนวนเงิน (บาท)</th>
+    </tr>
+    <!-- ข้อมูลจาก JavaScript จะถูกแทรกตรงนี้ -->
+  </table>
+
+  <script>
+    // ส่วนนี้คือจุดที่สามารถใช้ Fetch API ดึงข้อมูล CSV จาก Google Sheets มาแทนที่ Mock Data ได้
+    const mockData = [
+      { name: "ด้อมจิว", amount: 15000 },
+      { name: "ผู้สนับสนุนนิรนาม", amount: 10000 }
+    ];
+
+    let target = 50000;
+    let currentAmount = mockData.reduce((sum, donor) => sum + donor.amount, 0);
+
+    // อัปเดตตัวเลขและหลอด Progress
+    document.getElementById('current').innerText = currentAmount.toLocaleString();
+    let percentage = Math.min((currentAmount / target) * 100, 100);
+    document.getElementById('progress-fill').style.width = percentage + '%';
+    document.getElementById('progress-fill').innerText = percentage.toFixed(1) + '%';
+
+    // สร้างตาราง
+    const table = document.getElementById('donor-table');
+    mockData.forEach(donor => {
+      let row = table.insertRow();
+      row.insertCell(0).innerText = donor.name;
+      row.insertCell(1).innerText = donor.amount.toLocaleString();
+    });
+  </script>
+</body>
+</html>
