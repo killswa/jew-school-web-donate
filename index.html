@@ -1,105 +1,60 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>โปรเจกต์สนับสนุน จิว BNK48</title>
-  <style>
-    body { font-family: sans-serif; max-width: 600px; margin: auto; padding: 20px; }
-    .progress-bar { width: 100%; background-color: #e0e0e0; border-radius: 8px; overflow: hidden; margin-bottom: 20px; }
-    .progress-fill { height: 24px; background-color: #4caf50; width: 0%; text-align: center; color: white; transition: width 0.5s; line-height: 24px; }
-    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-    th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-    th { background-color: #f2f2f2; }
-    .loading { text-align: center; font-style: italic; color: #888; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>โรงเรียนของเรา - ยอดบริจาครวม</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Google Fonts: Mali (ฟอนต์น่ารัก สไตล์ลายมือ/โรงเรียน) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Mali:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-  <h1 style="text-align: center;">โปรเจกต์สนับสนุน จิว (Jew BNK48)</h1>
-  
-  <h3>ความคืบหน้าโปรเจกต์</h3>
-  <p>เป้าหมาย: <span id="target-display">50,000</span> บาท | ยอดปัจจุบัน: <span id="current">กำลังโหลด...</span> บาท</p>
-  <div class="progress-bar">
-    <div class="progress-fill" id="progress-fill">0%</div>
-  </div>
 
-  <h3>รายนามผู้สนับสนุน</h3>
-  <div id="loading-message" class="loading">กำลังดึงข้อมูลจาก Google Sheets...</div>
-  <table id="donor-table" style="display: none;">
-    <thead>
-      <tr>
-        <th>ผู้สนับสนุน</th>
-        <th>จำนวนเงิน (บาท)</th>
-      </tr>
-    </thead>
-    <tbody>
-      <!-- ข้อมูลจาก Google Sheets จะถูกแทรกตรงนี้ -->
-    </tbody>
-  </table>
+    <div class="container">
+        <!-- Header / ป้ายชื่อโรงเรียน -->
+        <header class="school-header">
+            <div class="badge">🏫 School Donation Fund</div>
+            <h1>โครงการระดมทุนเพื่อการศึกษา</h1>
+            <p>ร่วมเป็นผู้ให้ เพื่ออนาคตที่สดใสของน้องๆ นักเรียน</p>
+        </header>
 
-  <script>
-    // URL ที่เปลี่ยนให้ดึงข้อมูลเป็น CSV แล้ว
-    const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ3l9zibWhljiTfzhh6z4HIargq4OYEJFKZPdMYs6KGtZ6_p_-m6Ts_OJrBfGebHiS9sSDoC-r5mMTd/pub?gid=112485862&single=true&output=csv";
-    
-    // ตั้งเป้าหมายที่ต้องการ
-    const targetAmount = 50000;
-    
-    document.getElementById('target-display').innerText = targetAmount.toLocaleString();
+        <!-- Summary Blackboard / กระดานดำสรุปยอดรวม -->
+        <section class="blackboard-summary">
+            <div class="blackboard-inner">
+                <h2>✏️ ยอดบริจาครวมทั้งหมด</h2>
+                <div class="total-amount-box">
+                    <span id="total-donated">0</span> <small>บาท</small>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <span>เป้าหมายรวม:</span>
+                        <strong id="total-target">0</strong> บาท
+                    </div>
+                    <div class="stat-item">
+                        <span>จำนวนโปรเจกต์:</span>
+                        <strong id="project-count">0</strong> โครงการ
+                    </div>
+                </div>
+            </div>
+        </section>
 
-    // ฟังก์ชันดึงและแปลงข้อมูล CSV
-    fetch(csvUrl)
-      .then(response => response.text())
-      .then(csvText => {
-        // แยกบรรทัด
-        const rows = csvText.split("\n");
-        const tableBody = document.getElementById('donor-table').getElementsByTagName('tbody')[0];
-        let totalDonation = 0;
+        <!-- Sub Projects Section / โปรเจกต์ย่อย -->
+        <main class="projects-section">
+            <h2 class="section-title">🎒 โครงการย่อยทั้งหมด</h2>
+            <div id="projects-grid" class="projects-grid">
+                <div class="loading">กำลังโหลดข้อมูลโครงการน่ารักๆ... 🐻</div>
+            </div>
+        </main>
 
-        // สมมติว่าแถวแรก (Index 0) เป็น Header (ชื่อ, จำนวนเงิน)
-        // เราจะเริ่มอ่านข้อมูลตั้งแต่แถวที่ 2 (Index 1)
-        for (let i = 1; i < rows.length; i++) {
-          const row = rows[i].trim();
-          if (!row) continue; // ข้ามบรรทัดว่าง
+        <footer>
+            <p>🏫 ขอขอบคุณทุกๆ การสนับสนุนจากผู้ใจดีทุกท่าน 🤎</p>
+        </footer>
+    </div>
 
-          // แยกคอลัมน์ด้วยเครื่องหมายจุลภาค
-          // กรณีที่มีชื่อที่มีลูกน้ำข้างใน (เช่น "A, B") จะต้องเขียนตัวแยกที่ซับซ้อนกว่านี้ 
-          // แต่เพื่อความง่าย เราจะใช้ split(',') ไปก่อน
-          const cols = row.split(',');
-          
-          if(cols.length >= 2) {
-             const name = cols[0];
-             // แปลงค่าเงินให้เป็นตัวเลข ลบเครื่องหมายอื่นๆ ออก
-             const amount = parseFloat(cols[1].replace(/[^0-9.-]+/g,""));
-             
-             if(!isNaN(amount)) {
-                totalDonation += amount;
-
-                // สร้างแถวในตาราง
-                let newRow = tableBody.insertRow();
-                newRow.insertCell(0).innerText = name;
-                newRow.insertCell(1).innerText = amount.toLocaleString();
-             }
-          }
-        }
-
-        // อัปเดตยอดรวมและ Progress Bar
-        document.getElementById('current').innerText = totalDonation.toLocaleString();
-        
-        let percentage = Math.min((totalDonation / targetAmount) * 100, 100);
-        const progressFill = document.getElementById('progress-fill');
-        progressFill.style.width = percentage + '%';
-        progressFill.innerText = percentage.toFixed(1) + '%';
-
-        // ซ่อนข้อความโหลด และโชว์ตาราง
-        document.getElementById('loading-message').style.display = 'none';
-        document.getElementById('donor-table').style.display = 'table';
-
-      })
-      .catch(error => {
-        console.error("เกิดข้อผิดพลาดในการดึงข้อมูล:", error);
-        document.getElementById('loading-message').innerText = "ไม่สามารถโหลดข้อมูลได้";
-        document.getElementById('loading-message').style.color = "red";
-      });
-  </script>
+    <!-- PapaParse Library สำหรับอ่าน CSV จาก Google Sheets -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
