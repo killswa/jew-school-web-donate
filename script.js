@@ -4,10 +4,11 @@ const SHEET_ID = '1NbgQ_QtmMVC1d6JIZoWe2MV3_JHvakyHfJwvKuNVZ9w';
 const URL_PROJECTS = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=Projects`;
 const URL_DONATIONS = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=Donations`;
 
-// ตัวแปรส่วนกลางสำหรับเก็บข้อมูลไว้ใช้ตอนเปิด Popup
 let globalProjects = {};
 let globalProjectDonations = {};
 let globalDonorTotals = {};
+// ตัวแปรใหม่สำหรับเก็บรูปโปรไฟล์ล่าสุดของแต่ละคน
+let globalDonorAvatars = {}; 
 
 document.addEventListener('DOMContentLoaded', () => {
     fetchDashboardData();
@@ -38,24 +39,29 @@ async function fetchDashboardData() {
 }
 
 function processAndRender(projects, donations) {
-    // ล้างข้อมูลเก่า
     globalProjects = {};
     globalProjectDonations = {};
     globalDonorTotals = {};
+    globalDonorAvatars = {};
     
     let totalDonatedOverall = 0;
     let totalTargetOverall = 0;
     let validProjectsCount = 0;
 
-    // คำนวณยอดของแต่ละคน
+    // 1. คำนวณยอดรวม และเก็บรูปโปรไฟล์
     donations.forEach(d => {
         if (!d.donor_name || d.donor_name.trim() === '') return;
         const amount = parseFloat(d.amount) || 0;
+        
         globalDonorTotals[d.donor_name] = (globalDonorTotals[d.donor_name] || 0) + amount;
         totalDonatedOverall += amount; 
+        
+        if (d.donor_image && d.donor_image.trim() !== '') {
+            globalDonorAvatars[d.donor_name] = d.donor_image;
+        }
     });
 
-    // จัดกลุ่มตามโปรเจกต์
+    // 2. จัดกลุ่มตามโปรเจกต์
     donations.forEach(d => {
         if (!d.project_id) return;
         if (!globalProjectDonations[d.project_id]) globalProjectDonations[d.project_id] = [];
@@ -65,11 +71,9 @@ function processAndRender(projects, donations) {
     const projectsGrid = document.getElementById('projects-grid');
     projectsGrid.innerHTML = '';
 
-    // สร้างการ์ดโปรเจกต์
+    // 3. สร้างการ์ดโปรเจกต์ย่อย
     projects.forEach(project => {
         if (!project.id || !project.title) return;
-        
-        // เก็บข้อมูลโปรเจกต์ไว้ใช้ตอนกด Popup
         globalProjects[project.id] = project; 
         
         validProjectsCount++;
@@ -81,7 +85,6 @@ function processAndRender(projects, donations) {
         const percent = target > 0 ? Math.min(Math.round((currentAmount / target) * 100), 100) : 0;
         const isCompleted = currentAmount >= target;
 
-        // ประกอบ HTML การ์ด (เปลี่ยนจากลิสต์รายชื่อ เป็นปุ่มกด)
         const cardHTML = `
             <div class="project-card">
                 <span class="status-badge ${isCompleted ? 'completed' : ''}">
@@ -105,31 +108,70 @@ function processAndRender(projects, donations) {
         projectsGrid.innerHTML += cardHTML;
     });
 
-    // อัปเดตกระดานดำด้านบน
+    // 4. อัปเดตกระดานดำด้านบน
     document.getElementById('total-donated').innerText = totalDonatedOverall.toLocaleString();
     document.getElementById('total-target').innerText = totalTargetOverall.toLocaleString();
     document.getElementById('project-count').innerText = validProjectsCount;
+
+    // 5. 🌟 สร้างตารางจัดอันดับ (Leaderboard) 
+    renderLeaderboard();
 }
 
-// 🌟 ระบบ Popup (Modal)
+function renderLeaderboard() {
+    const leaderboardBody = document.getElementById('leaderboard-body');
+    if (!leaderboardBody) return;
+    
+    leaderboardBody.innerHTML = '';
+
+    // แปลงข้อมูลยอดรวมให้เป็น Array แล้วเรียงลำดับจากมากไปน้อย
+    const sortedDonors = Object.keys(globalDonorTotals).map(name => {
+        return {
+            name: name,
+            total: globalDonorTotals[name],
+            avatar: globalDonorAvatars[name] || `https://ui-avatars.com/api/?name=${name}&background=random`
+        };
+    }).sort((a, b) => b.total - a.total);
+
+    if (sortedDonors.length > 0) {
+        sortedDonors.forEach((donor, index) => {
+            let rankIcon = `${index + 1}`;
+            if (index === 0) rankIcon = '🥇 1';
+            else if (index === 1) rankIcon = '🥈 2';
+            else if (index === 2) rankIcon = '🥉 3';
+
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td class="rank-medal">${rankIcon}</td>
+                <td>
+                    <div class="leaderboard-donor">
+                        <img src="${donor.avatar}" alt="${donor.name}" class="leaderboard-avatar">
+                        ${donor.name}
+                    </div>
+                </td>
+                <td class="leaderboard-amount">${donor.total.toLocaleString()} ฿</td>
+            `;
+            leaderboardBody.appendChild(tr);
+        });
+    } else {
+        leaderboardBody.innerHTML = `<tr><td colspan="3" style="text-align: center; color: #8D6E63; padding: 30px;">ยังไม่มีข้อมูลผู้สนับสนุน มาร่วมเป็นคนแรกกันเถอะ! 😊</td></tr>`;
+    }
+}
+
+// ระบบ Popup (เหมือนเดิม)
 function openModal(projectId) {
     const project = globalProjects[projectId];
     const donors = globalProjectDonations[projectId] || [];
     
-    // อัปเดตชื่อโปรเจกต์บนหัว Popup
     document.getElementById('modal-project-title').innerText = `🎁 โปรเจกต์: ${project.title}`;
-    
     const listContainer = document.getElementById('modal-donors-list');
     
     if (donors.length > 0) {
-        // เรียงลำดับคนที่โดเนทเยอะสุดขึ้นก่อน
         donors.sort((a, b) => (parseFloat(b.amount) || 0) - (parseFloat(a.amount) || 0));
-        
         let html = '';
         donors.forEach(d => {
             const amount = parseFloat(d.amount) || 0;
             const totalAmount = globalDonorTotals[d.donor_name] || 0;
-            const avatar = d.donor_image || `https://ui-avatars.com/api/?name=${d.donor_name}&background=random`;
+            const avatar = globalDonorAvatars[d.donor_name] || `https://ui-avatars.com/api/?name=${d.donor_name}&background=random`;
             
             html += `
                 <div class="donor-item">
@@ -149,7 +191,6 @@ function openModal(projectId) {
         listContainer.innerHTML = `<div style="text-align:center; padding: 40px 20px; color:#8D6E63;">ยังไม่มีผู้สนับสนุน<br>มาร่วมระดมทุนให้น้องจิวกันเถอะ! 😊</div>`;
     }
     
-    // โชว์ Popup
     document.getElementById('donor-modal').style.display = 'flex';
 }
 
@@ -157,7 +198,6 @@ function closeModal() {
     document.getElementById('donor-modal').style.display = 'none';
 }
 
-// ถ้าคลิกพื้นที่ว่างๆ นอกกล่อง Popup ให้ปิด Popup
 window.onclick = function(event) {
     const modal = document.getElementById('donor-modal');
     if (event.target == modal) {
