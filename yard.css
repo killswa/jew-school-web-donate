@@ -56,7 +56,7 @@ body {
     z-index: 10;
 }
 
-/* 🌟 ป้ายชื่อแบบ 2 บรรทัด */
+/* 🌟 ป้ายชื่อแบบ 2 บรรทัด (ค่าเริ่มต้นดึงลงมาเยอะๆ สำหรับนักเรียนทั่วไป) */
 .name-tag {
     background: #E0E0E0;
     color: #000;
@@ -66,21 +66,21 @@ body {
     border-radius: 6px;
     text-align: center;
     
-    /* ⚠️ เปลี่ยนตรงนี้เป็นค่าติดลบ เพื่อดึงป้ายชื่อลงมา */
-    margin-bottom: -40px; 
+    /* ⚠️ ดึงป้ายลงมาลึกๆ ให้ติดหัวนักเรียนขนาดปกติ */
+    margin-bottom: -80px; 
     
     box-shadow: 2px 2px 0 rgba(0,0,0,0.5);
     z-index: 2;
     min-width: 70px;
-    position: relative; /* เพิ่มบรรทัดนี้เพื่อให้ป้ายชื่อลอยทับรูปได้ไม่โดนรูปบัง */
+    position: relative;
 }
 .name-tag .rank-text { font-size: 0.6rem; border-bottom: 1px dotted #9E9E9E; margin-bottom: 2px; padding-bottom: 2px; }
 .name-tag .name-text { font-size: 0.75rem; font-weight: bold; white-space: nowrap; }
 
 /* รูปตัวละคร (Sprite) */
 .sprite {
-    width: 240px; /* ขยายความกว้าง 2 เท่า (จากเดิม 120px) */
-    height: 240px; /* ขยายความสูง 2 เท่า (จากเดิม 120px) */
+    width: 240px; 
+    height: 240px; 
     object-fit: contain;
     image-rendering: pixelated;
     animation: rpg-walk 0.5s infinite alternate steps(2);
@@ -90,16 +90,16 @@ body {
     to { transform: translateY(-3px) rotate(3deg); }
 }
 
-/* 🌟 สีป้ายชื่อพิเศษสำหรับ TOP 3 */
+/* 🌟 สีป้ายชื่อและระยะความสูงพิเศษสำหรับ TOP 3 */
 .rank-1 { z-index: 30; }
-.rank-1 .name-tag { background: #FFEB3B; border-color: #9C27B0; color: #9C27B0; } 
+.rank-1 .name-tag { background: #FFEB3B; border-color: #9C27B0; color: #9C27B0; margin-bottom: -30px; } 
 .rank-1 .rank-text { border-bottom-color: #9C27B0; }
 .rank-1 .sprite { transform: scale(1.5); filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.8)); }
 
 .rank-2 { z-index: 29; }
-.rank-2 .name-tag { background: #F5F5F5; border-color: #607D8B; color: #37474F; }
+.rank-2 .name-tag { background: #F5F5F5; border-color: #607D8B; color: #37474F; margin-bottom: -45px; }
 .rank-2 .sprite { transform: scale(1.3); filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.6)); }
 
 .rank-3 { z-index: 28; }
-.rank-3 .name-tag { background: #FFCC80; border-color: #5D4037; color: #4E342E; }
+.rank-3 .name-tag { background: #FFCC80; border-color: #5D4037; color: #4E342E; margin-bottom: -60px; }
 .rank-3 .sprite { transform: scale(1.2); }
