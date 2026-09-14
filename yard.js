@@ -47,16 +47,16 @@ function processYardData(donations) {
         
         let charImg = '';
         if (rank === 1) {
-            charImg = 'https://i.postimg.cc/cLFhzG9N/Gemini-Generated-Image-84ujki84ujki84uj.jpg'; 
+            charImg = 'https://i.postimg.cc/6q4FW5Pd/Gemini-Generated-Image-84ujki84ujki84uj-removebg-preview.png'; 
         } else if (rank === 2) {
-            charImg = 'https://i.postimg.cc/BbfBFS64/Gemini-Generated-Image-nf3cwunf3cwunf3c.jpg'; 
+            charImg = 'https://i.postimg.cc/SRYHSNP8/Gemini-Generated-Image-nf3cwunf3cwunf3c-removebg-preview.png'; 
         } else if (rank === 3) {
-            charImg = 'https://i.postimg.cc/vHMvHZkC/Gemini-Generated-Image-jfjnxejfjnxejfjn.jpg'; 
+            charImg = 'https://i.postimg.cc/nr9NFcWB/Gemini-Generated-Image-jfjnxejfjnxejfjn-removebg-preview.png'; 
         } else {
             const isBoy = Math.random() < 0.5; 
             charImg = isBoy 
-                ? 'https://i.postimg.cc/vHMvHZkC/Gemini-Generated-Image-jfjnxejfjnxejfjn.jpg' 
-                : 'https://i.postimg.cc/GmgPQJtp/Gemini-Generated-Image-x6bzg1x6bzg1x6bz.jpg';
+                ? 'https://i.postimg.cc/nr9NFcWB/Gemini-Generated-Image-jfjnxejfjnxejfjn-removebg-preview.png' 
+                : 'https://i.postimg.cc/XqBtj7P5/Gemini-Generated-Image-x6bzg1x6bzg1x6bz-removebg-preview.png';
         }
 
         let crown = rank === 1 ? '✨ ' : rank === 2 ? '🕊️ ' : rank === 3 ? '🎀 ' : '';
