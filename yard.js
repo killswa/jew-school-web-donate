@@ -42,19 +42,19 @@ function processYardData(donations) {
         
         let charImg = '';
         if (rank === 1) {
-            charImg = 'https://i.postimg.cc/cLFhzG9N/Gemini-Generated-Image-84ujki84ujki84uj.jpg'; // 👑 ใส่ลิงก์รูปอันดับ 1
+            charImg = 'https://i.postimg.cc/6q4FW5Pd/Gemini-Generated-Image-84ujki84ujki84uj-removebg-preview.png'; // 👑 ใส่ลิงก์รูปอันดับ 1
         } else if (rank === 2) {
-            charImg = 'https://i.postimg.cc/BbfBFS64/Gemini-Generated-Image-nf3cwunf3cwunf3c.jpg'; // 🕊️ ใส่ลิงก์รูปอันดับ 2
+            charImg = 'https://i.postimg.cc/SRYHSNP8/Gemini-Generated-Image-nf3cwunf3cwunf3c-removebg-preview.png'; // 🕊️ ใส่ลิงก์รูปอันดับ 2
         } else if (rank === 3) {
-            charImg = 'https://i.postimg.cc/vHMvHZkC/Gemini-Generated-Image-jfjnxejfjnxejfjn.jpg'; // 🎀 ใส่ลิงก์รูปอันดับ 3
+            charImg = 'https://i.postimg.cc/nr9NFcWB/Gemini-Generated-Image-jfjnxejfjnxejfjn-removebg-preview.png'; // 🎀 ใส่ลิงก์รูปอันดับ 3
         } else {
             // 🌟 ระบบสุ่มนักเรียนชาย-หญิง สำหรับอันดับทั่วไป
             const isBoy = Math.random() < 0.5; 
             
             if (isBoy) {
-                charImg = 'https://i.postimg.cc/vHMvHZkC/Gemini-Generated-Image-jfjnxejfjnxejfjn.jpg'; // 👦 ใส่ลิงก์รูปนักเรียนชาย
+                charImg = 'https://i.postimg.cc/nr9NFcWB/Gemini-Generated-Image-jfjnxejfjnxejfjn-removebg-preview.png'; // 👦 ใส่ลิงก์รูปนักเรียนชาย
             } else {
-                charImg = 'https://i.postimg.cc/GmgPQJtp/Gemini-Generated-Image-x6bzg1x6bzg1x6bz.jpg'; // 👧 ใส่ลิงก์รูปนักเรียนหญิง
+                charImg = 'https://i.postimg.cc/XqBtj7P5/Gemini-Generated-Image-x6bzg1x6bzg1x6bz-removebg-preview.png'; // 👧 ใส่ลิงก์รูปนักเรียนหญิง
             }
         }
 
