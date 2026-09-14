@@ -50,9 +50,9 @@ body {
 /* 🌟 ตัวละคร */
 .student {
     position: absolute; top: 0; left: 0; 
-    width: 150px; /* ขยายกรอบคลุมไม่ให้ตัวละครล้น */
+    width: 300px; /* ขยายกรอบคลุมเป็น 2 เท่าเพื่อไม่ให้รูปโดนตัด */
     display: flex; flex-direction: column; align-items: center;
-    transition: transform 6s linear; /* เดินช้าๆ */
+    transition: transform 6s linear; 
     z-index: 10;
 }
 
@@ -75,8 +75,8 @@ body {
 
 /* รูปตัวละคร (Sprite) */
 .sprite {
-    width: 120px; /* ขยายความกว้างตัวละคร */
-    height: 120px; /* ขยายความสูงตัวละคร */
+    width: 240px; /* ขยายความกว้าง 2 เท่า (จากเดิม 120px) */
+    height: 240px; /* ขยายความสูง 2 เท่า (จากเดิม 120px) */
     object-fit: contain;
     image-rendering: pixelated;
     animation: rpg-walk 0.5s infinite alternate steps(2);
