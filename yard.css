@@ -75,8 +75,8 @@ body {
 
 /* รูปตัวละคร (Sprite) */
 .sprite {
-    width: 120px; /* ขยายความกว้างตัวละคร (เดิม 50px) */
-    height: 120px; /* ขยายความสูงตัวละคร (เดิม 50px) */
+    width: 120px; /* ขยายความกว้างตัวละคร */
+    height: 120px; /* ขยายความสูงตัวละคร */
     object-fit: contain;
     image-rendering: pixelated;
     animation: rpg-walk 0.5s infinite alternate steps(2);
