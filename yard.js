@@ -1,6 +1,4 @@
-// ใส่ Sheet ID ของโปรเจกต์น้องจิว
 const SHEET_ID = '1NbgQ_QtmMVC1d6JIZoWe2MV3_JHvakyHfJwvKuNVZ9w'; 
-
 const URL_DONATIONS = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=Donations`;
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -14,11 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function fetchCSV(url) {
     return new Promise((resolve, reject) => {
-        Papa.parse(url, {
-            download: true, header: true,
-            complete: (results) => resolve(results.data),
-            error: (err) => reject(err)
-        });
+        Papa.parse(url, { download: true, header: true, complete: (results) => resolve(results.data), error: (err) => reject(err) });
     });
 }
 
@@ -44,22 +38,39 @@ function processYardData(donations) {
     sortedDonors.forEach((donor, index) => {
         const rank = index + 1;
         const student = document.createElement('div');
-        
         student.className = `student ${rank <= 3 ? 'rank-' + rank : 'rank-normal'}`;
         
-        let imgUrl = donor.avatar || `https://ui-avatars.com/api/?name=${donor.name}&background=random`;
-        let crown = rank === 1 ? '👑 ' : rank === 2 ? '🥈 ' : rank === 3 ? '🥉 ' : '';
+        let charImg = '';
+        if (rank === 1) {
+            charImg = 'https://i.postimg.cc/cLFhzG9N/Gemini-Generated-Image-84ujki84ujki84uj.jpg'; // 👑 ใส่ลิงก์รูปอันดับ 1
+        } else if (rank === 2) {
+            charImg = 'https://i.postimg.cc/BbfBFS64/Gemini-Generated-Image-nf3cwunf3cwunf3c.jpg'; // 🕊️ ใส่ลิงก์รูปอันดับ 2
+        } else if (rank === 3) {
+            charImg = 'https://i.postimg.cc/vHMvHZkC/Gemini-Generated-Image-jfjnxejfjnxejfjn.jpg'; // 🎀 ใส่ลิงก์รูปอันดับ 3
+        } else {
+            // 🌟 ระบบสุ่มนักเรียนชาย-หญิง สำหรับอันดับทั่วไป
+            const isBoy = Math.random() < 0.5; 
+            
+            if (isBoy) {
+                charImg = 'https://i.postimg.cc/vHMvHZkC/Gemini-Generated-Image-jfjnxejfjnxejfjn.jpg'; // 👦 ใส่ลิงก์รูปนักเรียนชาย
+            } else {
+                charImg = 'https://i.postimg.cc/GmgPQJtp/Gemini-Generated-Image-x6bzg1x6bzg1x6bz.jpg'; // 👧 ใส่ลิงก์รูปนักเรียนหญิง
+            }
+        }
+
+        let crown = rank === 1 ? '✨ ' : rank === 2 ? '🕊️ ' : rank === 3 ? '🎀 ' : '';
 
         student.innerHTML = `
-            <div class="name-tag">${crown}#${rank} ${donor.name}</div>
-            <img src="${imgUrl}" class="sprite" alt="student">
+            <div class="name-tag">
+                <div class="rank-text">${crown}No.${rank}</div>
+                <div class="name-text">${donor.name}</div>
+            </div>
+            <img src="${charImg}" class="sprite" alt="student">
         `;
 
         yard.appendChild(student);
-
         moveStudent(student, yard);
         
-        // ⏱️ สั่งให้เดินใหม่ทุกๆ 6-9 วินาที (ช้าลงเยอะมาก)
         const walkInterval = 6000 + Math.random() * 3000;
         setInterval(() => { moveStudent(student, yard); }, walkInterval);
     });
@@ -67,32 +78,25 @@ function processYardData(donations) {
 
 function moveStudent(student, yard) {
     const maxX = yard.clientWidth - 80;
-    const maxY = yard.clientHeight - 80;
+    const maxY = yard.clientHeight - 100;
     
-    // บังคับไม่ให้เดินขึ้นไปทับอาคารเรียน (เว้นพื้นที่ด้านบนไว้ 220px)
-    const minY = 220; 
+    // กำหนดเขตการเดินเฉพาะส่วนที่เป็นหญ้าด้านล่างฉาก
+    const minY = yard.clientHeight * 0.4; 
     let randomY = minY + Math.floor(Math.random() * (maxY - minY));
-    
-    // ป้องกันหน้าจอมือถือเล็กเกินไปจนคำนวณติดลบ
     if (randomY < minY) randomY = minY;
 
     const randomX = Math.floor(Math.random() * maxX);
-
     const currentX = parseFloat(student.dataset.x) || 0;
     const sprite = student.querySelector('.sprite');
     
-    // หันซ้ายหันขวา
+    // กลับด้านรูปภาพให้หันตามทิศที่เดิน
     if (randomX < currentX) {
-        sprite.style.transform = 'scaleX(-1)'; 
+        sprite.style.transform = 'scaleX(-1)';
     } else {
         sprite.style.transform = 'scaleX(1)';
     }
 
-    // เซฟตำแหน่ง
     student.dataset.x = randomX;
-    
-    // อัปเดต z-index ให้คนที่อยู่ด้านล่างหน้าจอ (ใกล้ตา) บังคนที่อยู่ด้านบน
     student.style.zIndex = Math.floor(randomY); 
-    // ย้ายตำแหน่ง
     student.style.transform = `translate(${randomX}px, ${randomY}px)`;
 }
