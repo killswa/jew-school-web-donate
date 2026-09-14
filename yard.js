@@ -104,26 +104,34 @@ function moveStudent(student, yard) {
     const total = parseInt(student.dataset.total);
 
     if (yardMode === 'RANDOM') {
-        // โหมดเดินเล่น
+        // 🌟 โหมดเดินเล่น
         targetY = minY + Math.floor(Math.random() * (maxY - minY));
         targetX = Math.floor(Math.random() * maxX);
         if (targetY < minY) targetY = minY;
     } 
     else if (yardMode === 'JEW') {
-        // โหมดแปรอักษร JEW (แบ่งจุดพิกัดตัวอักษร 3 ตัว)
+        // 🌟 โหมดแปรอักษร JEW (ถ่างระยะให้กว้างเต็มหน้าจอ)
         const jewPoints = [
-            /* J */ {x: 0.1, y: 0.2}, {x: 0.2, y: 0.2}, {x: 0.3, y: 0.2}, {x: 0.2, y: 0.4}, {x: 0.2, y: 0.6}, {x: 0.1, y: 0.6},
-            /* E */ {x: 0.45, y: 0.2}, {x: 0.55, y: 0.2}, {x: 0.45, y: 0.4}, {x: 0.55, y: 0.4}, {x: 0.45, y: 0.6}, {x: 0.55, y: 0.6}, {x: 0.45, y: 0.3}, {x: 0.45, y: 0.5},
-            /* W */ {x: 0.7, y: 0.2}, {x: 0.75, y: 0.6}, {x: 0.8, y: 0.4}, {x: 0.85, y: 0.6}, {x: 0.9, y: 0.2}
+            // ตัว J (ซ้ายสุด)
+            {x: 0.05, y: 0.1}, {x: 0.15, y: 0.1}, {x: 0.25, y: 0.1}, 
+            {x: 0.15, y: 0.4}, {x: 0.15, y: 0.7}, {x: 0.05, y: 0.7},
+            // ตัว E (กลางจอ)
+            {x: 0.4, y: 0.1}, {x: 0.5, y: 0.1}, {x: 0.6, y: 0.1},
+            {x: 0.4, y: 0.4}, {x: 0.48, y: 0.4},
+            {x: 0.4, y: 0.7}, {x: 0.5, y: 0.7}, {x: 0.6, y: 0.7},
+            // ตัว W (ขวาสุด)
+            {x: 0.75, y: 0.1}, {x: 0.78, y: 0.7}, 
+            {x: 0.85, y: 0.4}, 
+            {x: 0.92, y: 0.7}, {x: 0.95, y: 0.1}
         ];
         const pt = jewPoints[index % jewPoints.length];
         targetX = pt.x * maxX;
-        targetY = minY + pt.y * (maxY - minY) * 0.8; 
+        targetY = minY + (pt.y * (maxY - minY)); 
     } 
     else if (yardMode === 'HEART') {
-        // โหมดแปรขบวนรูปหัวใจ (ใช้สูตรคำนวณกราฟเส้นหัวใจ)
+        // 🌟 โหมดแปรขบวนรูปหัวใจ (ขยายสเกลวงให้กว้างขึ้น)
         const t = (index / total) * 2 * Math.PI;
-        const scale = 12; // ขนาดความกว้างหัวใจ
+        const scale = 20; // ⚠️ ขยายขนาดหัวใจจาก 12 เป็น 20
         const x = 16 * Math.pow(Math.sin(t), 3);
         const y = -(13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t));
 
@@ -134,7 +142,7 @@ function moveStudent(student, yard) {
     const currentX = parseFloat(student.dataset.x) || 0;
     const sprite = student.querySelector('.sprite');
     
-    // หันซ้ายขวา
+    // หันซ้าย-ขวา
     if (targetX < currentX) {
         sprite.style.transform = 'scaleX(-1)';
     } else {
