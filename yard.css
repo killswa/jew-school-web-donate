@@ -65,10 +65,14 @@ body {
     border: 3px solid #757575;
     border-radius: 6px;
     text-align: center;
-    margin-bottom: 8px; /* เพิ่มระยะห่างจากหัวตัวละครนิดหน่อย */
+    
+    /* ⚠️ เปลี่ยนตรงนี้เป็นค่าติดลบ เพื่อดึงป้ายชื่อลงมา */
+    margin-bottom: -40px; 
+    
     box-shadow: 2px 2px 0 rgba(0,0,0,0.5);
     z-index: 2;
     min-width: 70px;
+    position: relative; /* เพิ่มบรรทัดนี้เพื่อให้ป้ายชื่อลอยทับรูปได้ไม่โดนรูปบัง */
 }
 .name-tag .rank-text { font-size: 0.6rem; border-bottom: 1px dotted #9E9E9E; margin-bottom: 2px; padding-bottom: 2px; }
 .name-tag .name-text { font-size: 0.75rem; font-weight: bold; white-space: nowrap; }
