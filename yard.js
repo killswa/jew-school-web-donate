@@ -80,18 +80,18 @@ function processYardData(donations) {
         }, walkInterval);
     });
 
-    // 🌟 ระบบ Master Control สั่งเปลี่ยนโหมดแปรอักษร
+// 🌟 ระบบ Master Control สั่งเปลี่ยนโหมดแปรอักษร
     setInterval(() => {
         if (yardMode === 'RANDOM') {
-            yardMode = 'JEW'; // สั่งเรียงตัวอักษร JEW
-        } else if (yardMode === 'JEW') {
-            yardMode = 'HEART'; // สั่งเรียงรูปหัวใจ
+            yardMode = 'LETTER_J'; // เปลี่ยนเป็นสั่งเรียงตัวอักษร J ตัวเดียว
+        } else if (yardMode === 'LETTER_J') {
+            yardMode = 'HEART';
         } else {
-            yardMode = 'RANDOM'; // ปล่อยเดินเล่น
+            yardMode = 'RANDOM';
         }
         // บังคับทุกคนเดินไปเข้าแถวพร้อมกันทันที
         studentsList.forEach(s => moveStudent(s, yard));
-    }, 20000); // สลับโหมดทุกๆ 20 วินาที
+    }, 20000);
 }
 
 function moveStudent(student, yard) {
@@ -103,46 +103,43 @@ function moveStudent(student, yard) {
     const index = parseInt(student.dataset.index);
     const total = parseInt(student.dataset.total);
 
+    // ลดระยะกระจายตัวลง เพื่อให้เส้นตัว J เรียงสวยขึ้น ไม่เบียดกันเกินไป
+    const offsetX = (Math.random() - 0.5) * 60; 
+    const offsetY = (Math.random() - 0.5) * 40;  
+
     if (yardMode === 'RANDOM') {
-        // 🌟 โหมดเดินเล่น
         targetY = minY + Math.floor(Math.random() * (maxY - minY));
         targetX = Math.floor(Math.random() * maxX);
         if (targetY < minY) targetY = minY;
     } 
-    else if (yardMode === 'JEW') {
-        // 🌟 โหมดแปรอักษร JEW (ถ่างระยะให้กว้างเต็มหน้าจอ)
-        const jewPoints = [
-            // ตัว J (ซ้ายสุด)
-            {x: 0.05, y: 0.1}, {x: 0.15, y: 0.1}, {x: 0.25, y: 0.1}, 
-            {x: 0.15, y: 0.4}, {x: 0.15, y: 0.7}, {x: 0.05, y: 0.7},
-            // ตัว E (กลางจอ)
-            {x: 0.4, y: 0.1}, {x: 0.5, y: 0.1}, {x: 0.6, y: 0.1},
-            {x: 0.4, y: 0.4}, {x: 0.48, y: 0.4},
-            {x: 0.4, y: 0.7}, {x: 0.5, y: 0.7}, {x: 0.6, y: 0.7},
-            // ตัว W (ขวาสุด)
-            {x: 0.75, y: 0.1}, {x: 0.78, y: 0.7}, 
-            {x: 0.85, y: 0.4}, 
-            {x: 0.92, y: 0.7}, {x: 0.95, y: 0.1}
+    else if (yardMode === 'LETTER_J') {
+        // 🌟 พิกัดตัว J ตัวเดียว จัดกึ่งกลางสนาม
+        const jPoints = [
+            // เส้นแนวนอนด้านบน (Top Bar)
+            {x: 0.35, y: 0.15}, {x: 0.45, y: 0.15}, {x: 0.55, y: 0.15}, {x: 0.65, y: 0.15}, 
+            // ก้านตรงลงมา (Stem)
+            {x: 0.55, y: 0.30}, {x: 0.55, y: 0.45}, {x: 0.55, y: 0.60}, 
+            // โค้งตะขอด้านล่าง (Hook)
+            {x: 0.55, y: 0.75}, {x: 0.45, y: 0.85}, {x: 0.35, y: 0.80}, {x: 0.35, y: 0.65}
         ];
-        const pt = jewPoints[index % jewPoints.length];
-        targetX = pt.x * maxX;
-        targetY = minY + (pt.y * (maxY - minY)); 
+        
+        const pt = jPoints[index % jPoints.length];
+        targetX = (pt.x * maxX) + offsetX;
+        targetY = minY + (pt.y * (maxY - minY)) + offsetY; 
     } 
     else if (yardMode === 'HEART') {
-        // 🌟 โหมดแปรขบวนรูปหัวใจ (ขยายสเกลวงให้กว้างขึ้น)
         const t = (index / total) * 2 * Math.PI;
-        const scale = 20; // ⚠️ ขยายขนาดหัวใจจาก 12 เป็น 20
+        const scale = 20; 
         const x = 16 * Math.pow(Math.sin(t), 3);
         const y = -(13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t));
 
-        targetX = (maxX / 2) + (x * scale) + 80;
-        targetY = ((maxY + minY) / 2) + (y * scale);
+        targetX = (maxX / 2) + (x * scale) + 80 + offsetX;
+        targetY = ((maxY + minY) / 2) + (y * scale) + offsetY;
     }
 
     const currentX = parseFloat(student.dataset.x) || 0;
     const sprite = student.querySelector('.sprite');
     
-    // หันซ้าย-ขวา
     if (targetX < currentX) {
         sprite.style.transform = 'scaleX(-1)';
     } else {
