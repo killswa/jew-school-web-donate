@@ -77,11 +77,15 @@ function processYardData(donations) {
 }
 
 function moveStudent(student, yard) {
-    const maxX = yard.clientWidth - 80;
-    const maxY = yard.clientHeight - 100;
+    // 1. ปรับขอบขวา: หักลบความกว้างตัวละคร (300px) เพื่อไม่ให้เดินทะลุจอฝั่งขวา
+    const maxX = Math.max(0, yard.clientWidth - 300); 
     
-    // กำหนดเขตการเดินเฉพาะส่วนที่เป็นหญ้าด้านล่างฉาก
-    const minY = yard.clientHeight * 0.4; 
+    // 2. ปรับขอบล่าง: หักลบความสูงตัวละคร (เผื่อไว้ 320px) เพื่อไม่ให้ตกขอบล่างจอ (โดยเฉพาะอันดับ 1 ที่ตัวใหญ่มาก)
+    const maxY = Math.max(0, yard.clientHeight - 320); 
+    
+    // 3. ปรับขอบบน: ลดตัวเลขจาก 0.4 เหลือ 0.25 (25% ของหน้าจอ) เพื่อให้เดินขึ้นไปใกล้ตึกเรียนและเสาธงได้มากขึ้น
+    const minY = yard.clientHeight * 0.25; 
+    
     let randomY = minY + Math.floor(Math.random() * (maxY - minY));
     if (randomY < minY) randomY = minY;
 
@@ -97,6 +101,8 @@ function moveStudent(student, yard) {
     }
 
     student.dataset.x = randomX;
+    
+    // ให้คนที่อยู่ด้านล่างจอ (ค่า Y มาก) บังคนที่อยู่ด้านบน (ค่า Y น้อย)
     student.style.zIndex = Math.floor(randomY); 
     student.style.transform = `translate(${randomX}px, ${randomY}px)`;
 }
