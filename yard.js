@@ -83,8 +83,8 @@ function processYardData(donations) {
 // 🌟 ระบบ Master Control สั่งเปลี่ยนโหมดแปรอักษร
     setInterval(() => {
         if (yardMode === 'RANDOM') {
-            yardMode = 'LETTER_J'; // เปลี่ยนเป็นสั่งเรียงตัวอักษร J ตัวเดียว
-        } else if (yardMode === 'LETTER_J') {
+            yardMode = 'JEW'; // กลับมาแปรอักษร JEW
+        } else if (yardMode === 'JEW') {
             yardMode = 'HEART';
         } else {
             yardMode = 'RANDOM';
@@ -103,27 +103,36 @@ function moveStudent(student, yard) {
     const index = parseInt(student.dataset.index);
     const total = parseInt(student.dataset.total);
 
-    // ลดระยะกระจายตัวลง เพื่อให้เส้นตัว J เรียงสวยขึ้น ไม่เบียดกันเกินไป
-    const offsetX = (Math.random() - 0.5) * 60; 
-    const offsetY = (Math.random() - 0.5) * 40;  
+    // ค่ากระจายตัว ให้นักเรียนยืนเหลื่อมกัน
+    const offsetX = (Math.random() - 0.5) * 80; 
+    const offsetY = (Math.random() - 0.5) * 60;  
 
     if (yardMode === 'RANDOM') {
         targetY = minY + Math.floor(Math.random() * (maxY - minY));
         targetX = Math.floor(Math.random() * maxX);
         if (targetY < minY) targetY = minY;
     } 
-    else if (yardMode === 'LETTER_J') {
-        // 🌟 พิกัดตัว J ตัวเดียว จัดกึ่งกลางสนาม
-        const jPoints = [
-            // เส้นแนวนอนด้านบน (Top Bar)
-            {x: 0.35, y: 0.15}, {x: 0.45, y: 0.15}, {x: 0.55, y: 0.15}, {x: 0.65, y: 0.15}, 
-            // ก้านตรงลงมา (Stem)
-            {x: 0.55, y: 0.30}, {x: 0.55, y: 0.45}, {x: 0.55, y: 0.60}, 
-            // โค้งตะขอด้านล่าง (Hook)
-            {x: 0.55, y: 0.75}, {x: 0.45, y: 0.85}, {x: 0.35, y: 0.80}, {x: 0.35, y: 0.65}
+    else if (yardMode === 'JEW') {
+        // 🌟 พิกัด JEW กระจายกว้างเต็มหน้าจอ
+        const jewPoints = [
+            /* --- ตัว J --- */
+            {x: 0.05, y: 0.1}, {x: 0.15, y: 0.1}, {x: 0.25, y: 0.1}, 
+            {x: 0.15, y: 0.3}, {x: 0.15, y: 0.5},                    
+            {x: 0.15, y: 0.8}, {x: 0.05, y: 0.7},                    
+
+            /* --- ตัว E --- */
+            {x: 0.40, y: 0.1}, {x: 0.50, y: 0.1}, {x: 0.60, y: 0.1}, 
+            {x: 0.40, y: 0.45}, {x: 0.50, y: 0.45},                  
+            {x: 0.40, y: 0.8}, {x: 0.50, y: 0.8}, {x: 0.60, y: 0.8}, 
+            {x: 0.40, y: 0.25}, {x: 0.40, y: 0.65},                  
+
+            /* --- ตัว W --- */
+            {x: 0.72, y: 0.1}, {x: 0.76, y: 0.5}, {x: 0.80, y: 0.8}, 
+            {x: 0.84, y: 0.5},                                       
+            {x: 0.88, y: 0.8}, {x: 0.92, y: 0.5}, {x: 0.96, y: 0.1}  
         ];
         
-        const pt = jPoints[index % jPoints.length];
+        const pt = jewPoints[index % jewPoints.length];
         targetX = (pt.x * maxX) + offsetX;
         targetY = minY + (pt.y * (maxY - minY)) + offsetY; 
     } 
