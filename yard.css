@@ -30,16 +30,19 @@ body {
 /* 🌟 สนามโรงเรียน (รูปฉากหลัง) */
 .school-yard {
     flex-grow: 1;
-    background-color: #8BC34A; /* สีหญ้าสำรอง */
-    /* ⚠️ ใส่ลิงก์รูปฉากหลังโรงเรียนตรงนี้ ⚠️ */
+    background-color: #8BC34A; 
     background-image: url('https://i.postimg.cc/MHBrk3cH/Jew-s-School-for-donate-2026-09-14T180433-536.png'); 
-    background-size: cover;
-    background-position: center bottom;
-    border: 10px solid #D7CCC8;
-    margin: 10px; 
+    
+    /* 🌟 ปรับให้ภาพเต็มพื้นที่ ไร้ขอบ */
+    background-size: 100% 100%; /* บังคับภาพกางให้เต็มพื้นที่ 100% พอดี */
+    background-position: center;
+    background-repeat: no-repeat;
+    margin: 0; /* เอาพื้นที่ว่างรอบๆ ออก */
+    border: none; /* เอาเส้นขอบออก */
+    
     position: relative;
     image-rendering: pixelated;
-    box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
+    box-shadow: inset 0 0 20px rgba(0,0,0,0.5); /* เงาดำขอบจอให้ดูมีมิติ */
 }
 
 .loading-yard { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-family: 'Silkscreen', cursive; font-size: 1.2rem; color: #fff; text-shadow: 2px 2px 0 #000; z-index: 100; }
